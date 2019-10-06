@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, abort, url_for
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import NoResultFound
 from .modelsMSSQL import MSPelicula, MSReparto, MSActor, MSDirector, MSGenero, db as msDb
 from .modelsMySQL import MyPelicula, MyReparto, MyActor, MyDirector, MyGenero, db as myDb
 
@@ -16,6 +17,10 @@ CORS(api)
 def jsonifyData(data): 
     serialData=[e.serialize() for e in data]
     return jsonify(serialData)
+
+# =====================
+#        Actor
+# =====================
 
 @api.route('/actores')
 def getActores():
@@ -41,25 +46,124 @@ def insertActorByKey():
     myDb.session.commit()
     return 'ok'
 
+@api.route('/actor/<key>', methods = ['DELETE'])
+def deleteActorByKey(key):
+    try:
+        msActor = MSActor.query.filter_by(id=key).one()
+        myActor = MyActor.query.filter_by(id=key).one()
+        msDb.session.delete(msActor)
+        myDb.session.delete(myActor)
+    except NoResultFound:
+        abort(404)
+        return
+    except IntegrityError:
+        return "integrity error", 400
+    msDb.session.commit()
+    myDb.session.commit()
+    return 'ok'
+
+# =====================
+#        Director
+# =====================
+
 @api.route('/directores')
 def getDirectores():
     data = MSDirector.query.all()
     return jsonifyData(data)
+
+@api.route('/director/<key>', methods = ['DELETE'])
+def deleteDirectorByKey(key):
+    try:
+        msDirector = MSDirector.query.filter_by(id=key).one()
+        myDirector = MyDirector.query.filter_by(id=key).one()
+        msDb.session.delete(msDirector)
+        myDb.session.delete(myDirector)
+    except NoResultFound:
+        abort(404)
+        return
+    except IntegrityError:
+        return "integrity error", 400
+    msDb.session.commit()
+    myDb.session.commit()
+    return 'ok'
+
+
+# =====================
+#        Genero
+# =====================
 
 @api.route('/generos')
 def getGeneros():
     data = MSGenero.query.all()
     return jsonifyData(data)
 
+@api.route('/genero/<key>', methods = ['DELETE'])
+def deleteGeneroByKey(key):
+    try:
+        msGenero = MSGenero.query.filter_by(id=key).one()
+        myGenero = MyGenero.query.filter_by(id=key).one()
+        msDb.session.delete(msGenero)
+        myDb.session.delete(myGenero)
+    except NoResultFound:
+        abort(404)
+        return
+    except IntegrityError:
+        return "integrity error", 400
+    msDb.session.commit()
+    myDb.session.commit()
+    return 'ok'
+
+
+# =====================
+#        Pelicula
+# =====================
+
 @api.route('/peliculas')
 def getPeliculas():
     data = MSPelicula.query.all()
     return jsonifyData(data)
 
+@api.route('/pelicula/<key>', methods = ['DELETE'])
+def deletePeliculaByKey(key):
+    try:
+        msPelicula = MSPelicula.query.filter_by(id=key).one()
+        myPelicula = MyPelicula.query.filter_by(id=key).one()
+        msDb.session.delete(msPelicula)
+        myDb.session.delete(myPelicula)
+    except NoResultFound:
+        abort(404)
+        return
+    except IntegrityError:
+        return "integrity error", 400
+    msDb.session.commit()
+    myDb.session.commit()
+    return 'ok'
+
+
+# =====================
+#        Reparto
+# =====================
+
 @api.route('/repartos')
 def getRepartos():
     data = MSReparto.query.all()
     return jsonifyData(data)
+
+@api.route('/reparto/<keyPelicula>/<keyActor>', methods = ['DELETE'])
+def deletePeliculaByKey(keyPelicula, keyActor):
+    try:
+        msReparto = MSReparto.query.filter_by(idPelicula=keyPelicula, idActor=keyActor).one()
+        myReparto = MyReparto.query.filter_by(idPelicula=keyPelicula, idActor=keyActor).one()
+        msDb.session.delete(msReparto)
+        myDb.session.delete(myReparto)
+    except NoResultFound:
+        abort(404)
+        return
+    except IntegrityError:
+        return "integrity error", 400
+    msDb.session.commit()
+    myDb.session.commit()
+    return 'ok'
 
 
 def init_app(app, url_prefix='/api/v1'):
