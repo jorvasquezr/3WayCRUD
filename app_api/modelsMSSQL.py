@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-class Actor(db.Model):
+class MSActor(db.Model):
     __tablename__ = 'ACTOR'
     id = db.Column('IdActor', db.Integer, nullable=False, primary_key=True, autoincrement=True)
     nombre = db.Column('Nombre', db.NCHAR(50))
@@ -16,7 +16,7 @@ class Actor(db.Model):
             'nacimiento': self.nacimiento
         }
 
-class Director(db.Model):
+class MSDirector(db.Model):
     __tablename__ = 'DIRECTOR'
     id = db.Column('IdDirector', db.Integer, nullable=False, primary_key=True, autoincrement=True)
     nombre = db.Column('Nombre', db.Unicode(50))
@@ -28,7 +28,7 @@ class Director(db.Model):
             'pais': self.pais
         }
 
-class Genero(db.Model):
+class MSGenero(db.Model):
     __tablename__ = 'GENERO'
     id = db.Column('IdGenero', db.Integer, nullable=False, primary_key=True, autoincrement=True)
     nombre = db.Column('Nombre', db.NCHAR(50), nullable=False)
@@ -38,7 +38,7 @@ class Genero(db.Model):
             'nombre': self.nombre
         }
 
-class Pelicula(db.Model):
+class MSPelicula(db.Model):
     __tablename__ = 'PELICULA'
     id = db.Column('IdPelicula', db.Integer, nullable=False, primary_key=True, autoincrement=True)
     nombre = db.Column('Nombre', db.NCHAR(50))
@@ -56,7 +56,7 @@ class Pelicula(db.Model):
             'calificacion': self.calificacion
         }
 
-class Reparto(db.Model):
+class MSReparto(db.Model):
     __tablename__ = 'REPARTO'
     idPelicula = db.Column(db.Integer, db.ForeignKey('PELICULA.IdPelicula'), nullable=False, primary_key=True)
     idActor = db.Column(db.Integer, db.ForeignKey('ACTOR.IdActor'), nullable=False, primary_key=True)
