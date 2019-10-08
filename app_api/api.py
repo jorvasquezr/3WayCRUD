@@ -66,6 +66,22 @@ def deleteActorByKey(key):
 #        Director
 # =====================
 
+
+@api.route('/director', methods = ['PUT'])
+def insertDirectorByKey():
+    try:
+        msDirector = MSDirector(id=request.json.get('id', None), nombre=request.json.get('nombre', None), pais=request.json.get('pais', None))
+        myDirector = MyDirector(id=request.json.get('id', None), nombre=request.json.get('nombre', None), pais=request.json.get('pais', None))
+        msDb.session.add(msDirector)
+        myDb.session.add(myDirector)
+        # TODO: Error 400 si id se especifica y ya existe 
+    except IntegrityError:
+        return 'integrity error', 400
+    msDb.session.commit()
+    myDb.session.commit()
+    return 'ok'
+
+
 @api.route('/directores')
 def getDirectores():
     data = MSDirector.query.all()
@@ -91,6 +107,20 @@ def deleteDirectorByKey(key):
 # =====================
 #        Genero
 # =====================
+
+@api.route('/genero', methods = ['PUT'])
+def insertGeneroByKey():
+    try:
+        msGenero = MSGenero(id=request.json.get('id', None), nombre=request.json.get('nombre', None))
+        myGenero = MyGenero(id=request.json.get('id', None), nombre=request.json.get('nombre', None))
+        msDb.session.add(msGenero)
+        myDb.session.add(myGenero)
+        # TODO: Error 400 si id se especifica y ya existe 
+    except IntegrityError:
+        return 'integrity error', 400
+    msDb.session.commit()
+    myDb.session.commit()
+    return 'ok'
 
 @api.route('/generos')
 def getGeneros():
@@ -118,6 +148,20 @@ def deleteGeneroByKey(key):
 #        Pelicula
 # =====================
 
+@api.route('/pelicula', methods = ['PUT'])
+def insertPeliculaByKey():
+    try:
+        msPelicula = MSPelicula(id=request.json.get('id', None), nombre=request.json.get('nombre', None),genero=request.json.get('genero', None),director=request.json.get('director', None),año=request.json.get('año', None),calificacion=request.json.get('calificacion', None))
+        myPelicula = MyPelicula(id=request.json.get('id', None), nombre=request.json.get('nombre', None),genero=request.json.get('genero', None),director=request.json.get('director', None),año=request.json.get('año', None),calificacion=request.json.get('calificacion', None))
+        msDb.session.add(msPelicula)
+        myDb.session.add(myPelicula)
+        # TODO: Error 400 si id se especifica y ya existe 
+    except IntegrityError:
+        return 'integrity error', 400
+    msDb.session.commit()
+    myDb.session.commit()
+    return 'ok'
+
 @api.route('/peliculas')
 def getPeliculas():
     data = MSPelicula.query.all()
@@ -144,13 +188,27 @@ def deletePeliculaByKey(key):
 #        Reparto
 # =====================
 
+@api.route('/reparto', methods = ['PUT'])
+def insertRepartoByKey():
+    try:
+        msReparto = MSReparto(id=request.json.get('id'), nombre=request.json.get('nombre', None),personaje=request.json.get('personaje', None),calificacion=request.json.get('calificacion', None))
+        myReparto = MyReparto(id=request.json.get('id'), nombre=request.json.get('nombre', None),personaje=request.json.get('personaje', None),calificacion=request.json.get('calificacion', None))
+        msDb.session.add(msReparto)
+        myDb.session.add(myReparto)
+        # TODO: Error 400 si id se especifica y ya existe 
+    except IntegrityError:
+        return 'integrity error', 400
+    msDb.session.commit()
+    myDb.session.commit()
+    return 'ok'
+
 @api.route('/repartos')
 def getRepartos():
     data = MSReparto.query.all()
     return jsonifyData(data)
 
 @api.route('/reparto/<keyPelicula>/<keyActor>', methods = ['DELETE'])
-def deletePeliculaByKey(keyPelicula, keyActor):
+def deleteRepartoByKey(keyPelicula, keyActor):
     try:
         msReparto = MSReparto.query.filter_by(idPelicula=keyPelicula, idActor=keyActor).one()
         myReparto = MyReparto.query.filter_by(idPelicula=keyPelicula, idActor=keyActor).one()
