@@ -151,8 +151,8 @@ def deleteGeneroByKey(key):
 @api.route('/pelicula', methods = ['PUT'])
 def insertPeliculaByKey():
     try:
-        msPelicula = MSPelicula(id=request.json.get('id', None), nombre=request.json.get('nombre', None),genero=request.json.get('genero', None),director=request.json.get('director', None),año=request.json.get('año', None),calificacion=request.json.get('calificacion', None))
-        myPelicula = MyPelicula(id=request.json.get('id', None), nombre=request.json.get('nombre', None),genero=request.json.get('genero', None),director=request.json.get('director', None),año=request.json.get('año', None),calificacion=request.json.get('calificacion', None))
+        msPelicula = MSPelicula(id=request.json.get('id', None), nombre=request.json.get('nombre', None),genero=request.json.get('genero', None),director=request.json.get('director', None),ano=request.json.get('ano', None),calificacion=request.json.get('calificacion', None))
+        myPelicula = MyPelicula(id=request.json.get('id', None), nombre=request.json.get('nombre', None),genero=request.json.get('genero', None),director=request.json.get('director', None),ano=request.json.get('ano', None),calificacion=request.json.get('calificacion', None))
         msDb.session.add(msPelicula)
         myDb.session.add(myPelicula)
         # TODO: Error 400 si id se especifica y ya existe 
