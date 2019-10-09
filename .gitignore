@@ -2,3 +2,4 @@ __pycache__
 .vscode
 pyenv
 config.py
+desktop.ini
