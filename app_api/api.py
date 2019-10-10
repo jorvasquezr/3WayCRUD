@@ -33,7 +33,7 @@ def getActorByKey(key):
     return jsonifyData(data)
 
 @api.route('/actor', methods = ['POST'])
-def insertActorByKey():
+def insertActor():
     try:
         msActor = MSActor(id=request.json.get('id', None), nombre=request.json.get('nombre', None), pais=request.json.get('pais', None), nacimiento=request.json.get('nacimiento', None))
         myActor = MyActor(id=request.json.get('id', None), nombre=request.json.get('nombre', None), pais=request.json.get('pais', None), nacimiento=request.json.get('nacimiento', None))
@@ -68,7 +68,7 @@ def deleteActorByKey(key):
 
 
 @api.route('/director', methods = ['POST'])
-def insertDirectorByKey():
+def insertDirector():
     try:
         msDirector = MSDirector(id=request.json.get('id', None), nombre=request.json.get('nombre', None), pais=request.json.get('pais', None))
         myDirector = MyDirector(id=request.json.get('id', None), nombre=request.json.get('nombre', None), pais=request.json.get('pais', None))
@@ -109,7 +109,7 @@ def deleteDirectorByKey(key):
 # =====================
 
 @api.route('/genero', methods = ['POST'])
-def insertGeneroByKey():
+def insertGenero():
     try:
         msGenero = MSGenero(id=request.json.get('id', None), nombre=request.json.get('nombre', None))
         myGenero = MyGenero(id=request.json.get('id', None), nombre=request.json.get('nombre', None))
@@ -149,7 +149,7 @@ def deleteGeneroByKey(key):
 # =====================
 
 @api.route('/pelicula', methods = ['POST'])
-def insertPeliculaByKey():
+def insertPelicula():
     try:
         msPelicula = MSPelicula(id=request.json.get('id', None), nombre=request.json.get('nombre', None),genero=request.json.get('genero', None),director=request.json.get('director', None),ano=request.json.get('ano', None),calificacion=request.json.get('calificacion', None))
         myPelicula = MyPelicula(id=request.json.get('id', None), nombre=request.json.get('nombre', None),genero=request.json.get('genero', None),director=request.json.get('director', None),ano=request.json.get('ano', None),calificacion=request.json.get('calificacion', None))
@@ -189,7 +189,7 @@ def deletePeliculaByKey(key):
 # =====================
 
 @api.route('/reparto', methods = ['POST'])
-def insertRepartoByKey():
+def insertReparto():
     try:
         msReparto = MSReparto(id=request.json.get('id'), nombre=request.json.get('nombre', None),personaje=request.json.get('personaje', None),calificacion=request.json.get('calificacion', None))
         myReparto = MyReparto(id=request.json.get('id'), nombre=request.json.get('nombre', None),personaje=request.json.get('personaje', None),calificacion=request.json.get('calificacion', None))
