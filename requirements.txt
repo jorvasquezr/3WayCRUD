@@ -3,4 +3,4 @@ flask-cors
 SQLAlchemy
 flask-sqlalchemy
 pyodbc
-mysqlclient
+Flask-PyMongo
