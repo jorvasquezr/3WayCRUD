@@ -9,7 +9,7 @@ parent_app = None
 api = Blueprint('api', __name__)
 CORS(api)
 
-# INSERTS CON PUT
+# INSERTS CON POST
 # UPDATES con POST
 # DELETES con DELETE
 # SELECT con GET
@@ -32,7 +32,7 @@ def getActorByKey(key):
     data = MSActor.query.filter_by(id=key)
     return jsonifyData(data)
 
-@api.route('/actor', methods = ['PUT'])
+@api.route('/actor', methods = ['POST'])
 def insertActorByKey():
     try:
         msActor = MSActor(id=request.json.get('id', None), nombre=request.json.get('nombre', None), pais=request.json.get('pais', None), nacimiento=request.json.get('nacimiento', None))
@@ -67,7 +67,7 @@ def deleteActorByKey(key):
 # =====================
 
 
-@api.route('/director', methods = ['PUT'])
+@api.route('/director', methods = ['POST'])
 def insertDirectorByKey():
     try:
         msDirector = MSDirector(id=request.json.get('id', None), nombre=request.json.get('nombre', None), pais=request.json.get('pais', None))
@@ -108,7 +108,7 @@ def deleteDirectorByKey(key):
 #        Genero
 # =====================
 
-@api.route('/genero', methods = ['PUT'])
+@api.route('/genero', methods = ['POST'])
 def insertGeneroByKey():
     try:
         msGenero = MSGenero(id=request.json.get('id', None), nombre=request.json.get('nombre', None))
@@ -148,7 +148,7 @@ def deleteGeneroByKey(key):
 #        Pelicula
 # =====================
 
-@api.route('/pelicula', methods = ['PUT'])
+@api.route('/pelicula', methods = ['POST'])
 def insertPeliculaByKey():
     try:
         msPelicula = MSPelicula(id=request.json.get('id', None), nombre=request.json.get('nombre', None),genero=request.json.get('genero', None),director=request.json.get('director', None),ano=request.json.get('ano', None),calificacion=request.json.get('calificacion', None))
@@ -188,7 +188,7 @@ def deletePeliculaByKey(key):
 #        Reparto
 # =====================
 
-@api.route('/reparto', methods = ['PUT'])
+@api.route('/reparto', methods = ['POST'])
 def insertRepartoByKey():
     try:
         msReparto = MSReparto(id=request.json.get('id'), nombre=request.json.get('nombre', None),personaje=request.json.get('personaje', None),calificacion=request.json.get('calificacion', None))
