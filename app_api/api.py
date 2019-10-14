@@ -243,12 +243,12 @@ def deletePeliculaByKey(key):
 @api.route('/reparto', methods=['POST'])
 def insertReparto():
     try:
-        msReparto = MSReparto(id=request.json.get('id'), nombre=request.json.get('nombre', None), personaje=request.json.get(
+        msReparto = MSReparto(idPelicula=request.json.get('idPelicula'), idActor=request.json.get('idActor', None), personaje=request.json.get(
             'personaje', None), calificacion=request.json.get('calificacion', None))
         msDb.session.add(msReparto)
         # Send changes to DB to determine the id and maybe get integrity errors
         msDb.session.flush()
-        myReparto = MyReparto(id=request.json.get('id'), nombre=request.json.get('nombre', None), personaje=request.json.get(
+        myReparto = MyReparto(idPelicula=request.json.get('idPelicula'), idActor=request.json.get('idActor', None), personaje=request.json.get(
             'personaje', None), calificacion=request.json.get('calificacion', None))
         myDb.session.add(myReparto)
     except IntegrityError:
