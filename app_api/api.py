@@ -140,7 +140,7 @@ def updateDirectorByKey(key):
             MyDirector.pais: request.json.get('pais', MyDirector.pais)
         }, synchronize_session=False)
 
-        #Metodo de mongo para actualizar director
+         mongo.db.DIRECTOR.update_one({"_id": eval(key)},{"$set":request.json})
 
     except IntegrityError:
         return 'integrity error', 400
@@ -208,7 +208,8 @@ def updateGeneroByKey(key):
             MyGenero.nombre: request.json.get('nombre', MyGenero.nombre)
         }, synchronize_session=False)
 
-        #Metodo de mongo para actualizar genero
+        mongo.db.GENERO.update_one({"_id": eval(key)},{"$set":request.json})
+
 
     except IntegrityError:
         return 'integrity error', 400
@@ -288,7 +289,8 @@ def updatePeliculaByKey(key):
             MyPelicula.calificacion: request.json.get('calificacion', MyPelicula.nombre),
         }, synchronize_session=False)
 
-        #Metodo de mongo para actualizar pelicula
+        mongo.db.PELICULA.update_one({"_id": eval(key)},{"$set":request.json})
+
 
     except IntegrityError:
         return 'integrity error', 400
@@ -366,7 +368,8 @@ def updateRepartoByKey(keyPelicula, keyActor):
             MyReparto.personaje: request.json.get('personaje', MyReparto.personaje),
             MyReparto.calificacion: request.json.get('calificacion', MyReparto.calificacion)
         }, synchronize_session=False)
-        #Metodo de mongo para actualizar pelicula
+        mongo.db.REPARTO.update_one({"idPelicula": eval(keyPelicula),"idActor": eval(keyActor)},{"$set":request.json})
+
     except IntegrityError:
         return 'integrity error', 400
     msDb.session.commit()
@@ -393,6 +396,7 @@ def deleteRepartoByKey(keyPelicula, keyActor):
             { "_id": keyPelicula },
             { "$pull": { "reparto": {"actor._id" :keyActor}}})
     return 'ok'
+
 
 
 def init_app(app, url_prefix='/api/v1'):
