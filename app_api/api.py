@@ -368,7 +368,9 @@ def updateRepartoByKey(keyPelicula, keyActor):
             MyReparto.personaje: request.json.get('personaje', MyReparto.personaje),
             MyReparto.calificacion: request.json.get('calificacion', MyReparto.calificacion)
         }, synchronize_session=False)
-        mongo.db.REPARTO.update_one({"idPelicula": eval(keyPelicula),"idActor": eval(keyActor)},{"$set":request.json})
+        mongo.db.PELICULA.update({ "_id": int(keyPelicula) , "reparto.actor":int(keyActor)},
+            { "$set": { "reparto.$.personaje": request.json.get('personaje', None),
+                        "reparto.$.calificacion": request.json.get('calificacion', None) }})
 
     except IntegrityError:
         return 'integrity error', 400
