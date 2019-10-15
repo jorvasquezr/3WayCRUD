@@ -75,7 +75,7 @@ def updateActorByKey(key):
             MyActor.pais: request.json.get('pais', MyActor.pais),
             MyActor.nacimiento: request.json.get('nacimiento', MyActor.nacimiento)
         }, synchronize_session=False)
-        mongo.db.ACTOR.update_one({'_id': eval(key)},{"$set":request.json})
+        mongo.db.ACTOR.update_one({"_id": eval(key)},{"$set":request.json})
     except IntegrityError:
         return 'integrity error', 400
     msDb.session.commit()
@@ -90,7 +90,7 @@ def deleteActorByKey(key):
         myActor = MyActor.query.filter_by(id=key).one()
         msDb.session.delete(msActor)
         myDb.session.delete(myActor)
-        mongo.db.ACTOR.delete_one({'_id': eval(key)})
+        mongo.db.ACTOR.delete_one({"_id": eval(key)})
     except NoResultFound:
         abort(404)
         return
@@ -116,6 +116,11 @@ def insertDirector():
         myDirector = MyDirector(id=request.json.get('id', None), nombre=request.json.get(
             'nombre', None), pais=request.json.get('pais', None))
         myDb.session.add(myDirector)
+        mongo.db.DIRECTOR.insert_one({
+            "_id": msDirector.id,
+            "nombre": request.json.get('nombre', None),
+            "pais": request.json.get('pais', None)
+        })
     except IntegrityError:
         return 'integrity error', 400
     msDb.session.commit()
@@ -136,6 +141,7 @@ def deleteDirectorByKey(key):
         myDirector = MyDirector.query.filter_by(id=key).one()
         msDb.session.delete(msDirector)
         myDb.session.delete(myDirector)
+        mongo.db.DIRECTOR.delete_one({"_id": eval(key)})
     except NoResultFound:
         abort(404)
         return
@@ -161,6 +167,10 @@ def insertGenero():
         myGenero = MyGenero(id=request.json.get('id', None),
                             nombre=request.json.get('nombre', None))
         myDb.session.add(myGenero)
+        mongo.db.GENERO.insert_one({
+            "_id": msGenero.id,
+            "nombre": request.json.get('nombre', None)
+        })
     except IntegrityError:
         return 'integrity error', 400
     msDb.session.commit()
@@ -181,6 +191,7 @@ def deleteGeneroByKey(key):
         myGenero = MyGenero.query.filter_by(id=key).one()
         msDb.session.delete(msGenero)
         myDb.session.delete(myGenero)
+        mongo.db.GENERO.delete_one({"_id": eval(key)})
     except NoResultFound:
         abort(404)
         return
@@ -206,6 +217,15 @@ def insertPelicula():
         myPelicula = MyPelicula(id=request.json.get('id', None), nombre=request.json.get('nombre', None), genero=request.json.get(
             'genero', None), director=request.json.get('director', None), ano=request.json.get('ano', None), calificacion=request.json.get('calificacion', None))
         myDb.session.add(myPelicula)
+        mongo.db.PELICULA.insert_one({
+            "_id": msPelicula.id,
+            "nombre": request.json.get('nombre', None),
+            "calificacion": request.json.get('calificacion', None),
+            "ano": request.json.get('ano', None),
+            "reparto": [],
+            "director": mongo.db.DIRECTOR.find({"_id":request.json.get('director', None)}),
+            "genero": mongo.db.GENERO.find({"_id":request.json.get('genero', None)})
+        })
     except IntegrityError:
         return 'integrity error', 400
     msDb.session.commit()
@@ -226,6 +246,7 @@ def deletePeliculaByKey(key):
         myPelicula = MyPelicula.query.filter_by(id=key).one()
         msDb.session.delete(msPelicula)
         myDb.session.delete(myPelicula)
+        mongo.db.PELICULA.delete_one({"_id": eval(key)})
     except NoResultFound:
         abort(404)
         return
@@ -251,6 +272,11 @@ def insertReparto():
         myReparto = MyReparto(idPelicula=request.json.get('idPelicula'), idActor=request.json.get('idActor', None), personaje=request.json.get(
             'personaje', None), calificacion=request.json.get('calificacion', None))
         myDb.session.add(myReparto)
+        mongo.db.PELICULA.update(
+            { "_id": request.json.get('idPelicula') },
+            { "$push": { "reparto": {"actor": mongo.db.ACTOR.find({"_id": request.json.get('idActor')}),
+                                     "personaje":request.json.get('personaje', None),
+                                     "calificacion": request.json.get('calificacion', None) }}})
     except IntegrityError:
         return 'integrity error', 400
     msDb.session.commit()
@@ -280,6 +306,9 @@ def deleteRepartoByKey(keyPelicula, keyActor):
         return "integrity error", 400
     msDb.session.commit()
     myDb.session.commit()
+    mongo.db.PELICULA.update(
+            { "_id": keyPelicula },
+            { "$pull": { "reparto": {"actor._id" :keyActor}}})
     return 'ok'
 
 
