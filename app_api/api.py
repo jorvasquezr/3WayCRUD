@@ -127,6 +127,26 @@ def insertDirector():
     myDb.session.commit()
     return 'ok'
 
+@api.route('/director/<key>', methods=['PUT'])
+def updateDirectorByKey(key):
+    try:
+        msDb.session.query(MSDirector).filter(MSDirector.id == key).update({
+            MSDirector.nombre: request.json.get('nombre', MSDirector.nombre),
+            MSDirector.pais: request.json.get('pais', MSDirector.pais)
+        }, synchronize_session=False)
+
+        myDb.session.query(MyDirector).filter(MyDirector.id == key).update({
+            MyDirector.nombre: request.json.get('nombre', MyDirector.nombre),
+            MyDirector.pais: request.json.get('pais', MyDirector.pais)
+        }, synchronize_session=False)
+
+        #Metodo de mongo para actualizar director
+
+    except IntegrityError:
+        return 'integrity error', 400
+    msDb.session.commit()
+    myDb.session.commit()
+    return 'ok'
 
 @api.route('/directores')
 def getDirectores():
@@ -177,6 +197,24 @@ def insertGenero():
     myDb.session.commit()
     return 'ok'
 
+@api.route('/genero/<key>', methods=['PUT'])
+def updateGeneroByKey(key):
+    try:
+        msDb.session.query(MSGenero).filter(MSGenero.id == key).update({
+            MSGenero.nombre: request.json.get('nombre', MSGenero.nombre)
+        }, synchronize_session=False)
+
+        myDb.session.query(MyGenero).filter(MyGenero.id == key).update({
+            MyGenero.nombre: request.json.get('nombre', MyGenero.nombre)
+        }, synchronize_session=False)
+
+        #Metodo de mongo para actualizar genero
+
+    except IntegrityError:
+        return 'integrity error', 400
+    msDb.session.commit()
+    myDb.session.commit()
+    return 'ok'
 
 @api.route('/generos')
 def getGeneros():
@@ -231,6 +269,33 @@ def insertPelicula():
     msDb.session.commit()
     myDb.session.commit()
     return 'ok'
+@api.route('/pelicula/<key>', methods=['PUT'])
+def updatePeliculaByKey(key):
+    try:
+        msDb.session.query(MSPelicula).filter(MSPelicula.id == key).update({
+            MSPelicula.nombre: request.json.get('nombre', MSPelicula.nombre),
+            MSPelicula.genero: request.json.get('genero', MSPelicula.genero),
+            MSPelicula.director: request.json.get('director', MSPelicula.director),
+            MSPelicula.ano: request.json.get('ano', MSPelicula.ano),
+            MSPelicula.calificacion: request.json.get('calificacion', MSPelicula.nombre),
+        }, synchronize_session=False)
+        
+        myDb.session.query(MyPelicula).filter(MyPelicula.id == key).update({
+            MyPelicula.nombre: request.json.get('nombre', MyPelicula.nombre),
+            MyPelicula.genero: request.json.get('genero', MyPelicula.genero),
+            MyPelicula.director: request.json.get('director', MyPelicula.director),
+            MyPelicula.ano: request.json.get('ano', MyPelicula.ano),
+            MyPelicula.calificacion: request.json.get('calificacion', MyPelicula.nombre),
+        }, synchronize_session=False)
+
+        #Metodo de mongo para actualizar pelicula
+
+    except IntegrityError:
+        return 'integrity error', 400
+    msDb.session.commit()
+    myDb.session.commit()
+    return 'ok'
+
 
 
 @api.route('/peliculas')
@@ -289,6 +354,24 @@ def getRepartos():
     data = MSReparto.query.all()
     return jsonifyData(data)
 
+@api.route('/reparto/<keyPelicula>/<keyActor>', methods=['PUT'])
+def updateRepartoByKey(keyPelicula, keyActor):
+    try:
+        msDb.session.query(MSReparto).filter(MSReparto.idPelicula == keyPelicula,MSReparto.idActor == keyActor, ).update({
+            MSReparto.personaje: request.json.get('personaje', MSReparto.personaje),
+            MSReparto.calificacion: request.json.get('calificacion', MSReparto.calificacion)
+        }, synchronize_session=False)
+        
+        myDb.session.query(MyReparto).filter(MyReparto.idPelicula == keyPelicula,MyReparto.idActor == keyActor, ).update({
+            MyReparto.personaje: request.json.get('personaje', MyReparto.personaje),
+            MyReparto.calificacion: request.json.get('calificacion', MyReparto.calificacion)
+        }, synchronize_session=False)
+        #Metodo de mongo para actualizar pelicula
+    except IntegrityError:
+        return 'integrity error', 400
+    msDb.session.commit()
+    myDb.session.commit()
+    return 'ok'
 
 @api.route('/reparto/<keyPelicula>/<keyActor>', methods=['DELETE'])
 def deleteRepartoByKey(keyPelicula, keyActor):
