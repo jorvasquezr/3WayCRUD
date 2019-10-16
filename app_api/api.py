@@ -11,7 +11,7 @@ api = Blueprint('api', __name__)
 CORS(api)
 
 # INSERTS CON POST
-# UPDATES con POST
+# UPDATES con PUT
 # DELETES con DELETE
 # SELECT con GET
 
@@ -92,7 +92,7 @@ def deleteActorByKey(key):
         msDb.session.delete(msActor)
         myDb.session.delete(myActor)
         mongo.db.ACTOR.delete_one({"_id": eval(key)})
-        # TODO: delete actor en reparto de pelicula, ponerlo null
+        # TODO: delete reparto en pelicula, yo habia dicho null, pero ya vi, por llaves se tiene que borrar
     except NoResultFound:
         abort(404)
         return

@@ -46,8 +46,8 @@ class MyPelicula(db.Model):
     __tablename__ = 'PELICULA'
     id = db.Column('IdPelicula', db.Integer, nullable=False, primary_key=True, autoincrement=True)
     nombre = db.Column('Nombre', db.NCHAR(50))
-    genero = db.Column('Genero', db.Integer, db.ForeignKey('GENERO.IdGenero'))
-    director = db.Column('Director', db.Integer, db.ForeignKey('DIRECTOR.IdDirector'))
+    genero = db.Column('Genero', db.Integer, db.ForeignKey('GENERO.IdGenero', ondelete="SET NULL"))
+    director = db.Column('Director', db.Integer, db.ForeignKey('DIRECTOR.IdDirector', ondelete="SET NULL"))
     ano = db.Column('A\xf1o', db.Integer)
     calificacion = db.Column('Calificacion', db.Integer)
     def serialize(self):
@@ -63,8 +63,8 @@ class MyPelicula(db.Model):
 class MyReparto(db.Model):
     __bind_key__ = 'mySQL'
     __tablename__ = 'REPARTO'
-    idPelicula = db.Column(db.Integer, db.ForeignKey('PELICULA.IdPelicula'), nullable=False, primary_key=True)
-    idActor = db.Column(db.Integer, db.ForeignKey('ACTOR.IdActor'), nullable=False, primary_key=True)
+    idPelicula = db.Column(db.Integer, db.ForeignKey('PELICULA.IdPelicula', ondelete="CASCADE"), nullable=False, primary_key=True)
+    idActor = db.Column(db.Integer, db.ForeignKey('ACTOR.IdActor', ondelete="CASCADE"), nullable=False, primary_key=True)
     personaje = db.Column('Personaje', db.NCHAR(50))
     calificacion = db.Column('Calificacion', db.Integer)
     def serialize(self):
