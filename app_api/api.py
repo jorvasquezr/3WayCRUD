@@ -11,7 +11,7 @@ api = Blueprint('api', __name__)
 CORS(api)
 
 # INSERTS CON POST
-# UPDATES con PUT
+# UPDATES con PATCH
 # DELETES con DELETE
 # SELECT con GET
 
@@ -61,7 +61,7 @@ def insertActor():
     return 'ok'
 
 
-@api.route('/actor/<key>', methods=['PUT'])
+@api.route('/actor/<key>', methods=['PATCH'])
 def updateActorByKey(key):
     try:
         msDb.session.query(MSActor).filter(MSActor.id == key).update({
@@ -134,7 +134,7 @@ def insertDirector():
     myDb.session.commit()
     return 'ok'
 
-@api.route('/director/<key>', methods=['PUT'])
+@api.route('/director/<key>', methods=['PATCH'])
 def updateDirectorByKey(key):
     try:
         msDb.session.query(MSDirector).filter(MSDirector.id == key).update({
@@ -208,7 +208,7 @@ def insertGenero():
     myDb.session.commit()
     return 'ok'
 
-@api.route('/genero/<key>', methods=['PUT'])
+@api.route('/genero/<key>', methods=['PATCH'])
 def updateGeneroByKey(key):
     try:
         msDb.session.query(MSGenero).filter(MSGenero.id == key).update({
@@ -284,7 +284,7 @@ def insertPelicula():
     myDb.session.commit()
     return 'ok'
 
-@api.route('/pelicula/<key>', methods=['PUT'])
+@api.route('/pelicula/<key>', methods=['PATCH'])
 def updatePeliculaByKey(key):
     try:
         msDb.session.query(MSPelicula).filter(MSPelicula.id == key).update({
@@ -376,8 +376,11 @@ def getRepartos():
     data = MSReparto.query.all()
     return jsonifyData(data)
 
-@api.route('/reparto/<keyPelicula>/<keyActor>', methods=['PUT'])
+@api.route('/reparto/<keyPelicula>/<keyActor>', methods=['PATCH'])
 def updateRepartoByKey(keyPelicula, keyActor):
+    # TODO: no permitir cambiar actor o pelicula
+    if (request.json.get('idPelicula', None) != None or request.json.get('idActor', None) != None):
+        return 'can\'t change the keys', 400
     try:
         msDb.session.query(MSReparto).filter(MSReparto.idPelicula == keyPelicula,MSReparto.idActor == keyActor, ).update({
             MSReparto.personaje: request.json.get('personaje', MSReparto.personaje),
