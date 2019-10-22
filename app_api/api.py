@@ -292,7 +292,7 @@ def updatePeliculaByKey(key):
             MSPelicula.genero: request.json.get('genero', MSPelicula.genero),
             MSPelicula.director: request.json.get('director', MSPelicula.director),
             MSPelicula.ano: request.json.get('ano', MSPelicula.ano),
-            MSPelicula.calificacion: request.json.get('calificacion', MSPelicula.nombre),
+            MSPelicula.calificacion: request.json.get('calificacion', MSPelicula.calificacion),
         }, synchronize_session=False)
         
         myDb.session.query(MyPelicula).filter(MyPelicula.id == key).update({
@@ -300,7 +300,7 @@ def updatePeliculaByKey(key):
             MyPelicula.genero: request.json.get('genero', MyPelicula.genero),
             MyPelicula.director: request.json.get('director', MyPelicula.director),
             MyPelicula.ano: request.json.get('ano', MyPelicula.ano),
-            MyPelicula.calificacion: request.json.get('calificacion', MyPelicula.nombre),
+            MyPelicula.calificacion: request.json.get('calificacion', MyPelicula.calificacion),
         }, synchronize_session=False)
 
         obj = mongo.db.PELICULA.find_one({"_id":eval(key)})
