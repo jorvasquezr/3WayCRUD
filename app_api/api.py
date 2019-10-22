@@ -75,8 +75,13 @@ def updateActorByKey(key):
             MyActor.pais: request.json.get('pais', MyActor.pais),
             MyActor.nacimiento: request.json.get('nacimiento', MyActor.nacimiento)
         }, synchronize_session=False)
-        mongo.db.ACTOR.update_one({"_id": eval(key)},{"$set":request.json})
-        # TODO: Update actor en reparto de pelicula.
+        
+        obj = mongo.db.ACTOR.find_one({"_id": eval(key)})
+        mongo.db.ACTOR.update_one({"_id": eval(key)},{"$set": { "nombre": request.json.get('nombre', obj["nombre"]),
+                                                                "pais": request.json.get('pais', obj["pais"]),
+                                                                "nacimiento": request.json.get('nacimiento', obj["nacimiento"])}})
+        mongo.db.PELICULA.update_many({"reparto.actor._id": eval(key)},{"$set": {"reparto.$.actor" : mongo.db.ACTOR.find_one({"_id": eval(key)}) }})
+
     except IntegrityError:
         return 'integrity error', 400
     msDb.session.commit()
@@ -92,7 +97,7 @@ def deleteActorByKey(key):
         msDb.session.delete(msActor)
         myDb.session.delete(myActor)
         mongo.db.ACTOR.delete_one({"_id": eval(key)})
-        # TODO: delete reparto en pelicula, yo habia dicho null, pero ya vi, por llaves se tiene que borrar
+        mongo.db.PELICULA.update_many({},{ "$pull": { "reparto" : { "actor._id": eval(key)} } })
     except NoResultFound:
         abort(404)
         return
@@ -142,8 +147,10 @@ def updateDirectorByKey(key):
             MyDirector.pais: request.json.get('pais', MyDirector.pais)
         }, synchronize_session=False)
 
-        mongo.db.DIRECTOR.update_one({"_id": eval(key)},{"$set":request.json})
-        # TODO: update director en pelicula
+        obj = mongo.db.DIRECTOR.find_one({"_id": eval(key)})
+        mongo.db.DIRECTOR.update_one({"_id": eval(key)},{"$set":{"nombre": request.json.get('nombre', obj["nombre"]),
+                                                                 "pais": request.json.get('pais', obj["pais"])}})
+        mongo.db.PELICULA.update_many({"director._id": eval(key)},{"$set": {"director" : mongo.db.DIRECTOR.find_one({"_id": eval(key)}) }})
 
     except IntegrityError:
         return 'integrity error', 400
@@ -165,7 +172,7 @@ def deleteDirectorByKey(key):
         msDb.session.delete(msDirector)
         myDb.session.delete(myDirector)
         mongo.db.DIRECTOR.delete_one({"_id": eval(key)})
-        # TODO: Poner director null en pelicula cuando se elimina
+        mongo.db.PELICULA.update_many({"director._id": eval(key)},{"$set": {"director" : None }})
     except NoResultFound:
         abort(404)
         return
@@ -212,8 +219,9 @@ def updateGeneroByKey(key):
             MyGenero.nombre: request.json.get('nombre', MyGenero.nombre)
         }, synchronize_session=False)
 
-        mongo.db.GENERO.update_one({"_id": eval(key)},{"$set":request.json})
-        # TODO: Update genero dentro de pelicula
+        obj = mongo.db.GENERO.find_one({"_id": eval(key)})
+        mongo.db.GENERO.update_one({"_id": eval(key)},{"$set":{"nombre": request.json.get('nombre', obj["nombre"])}})
+        mongo.db.PELICULA.update_many({"genero._id": eval(key)},{"$set": {"genero" : mongo.db.GENERO.find_one({"_id": eval(key)}) }})
 
     except IntegrityError:
         return 'integrity error', 400
@@ -235,7 +243,7 @@ def deleteGeneroByKey(key):
         msDb.session.delete(msGenero)
         myDb.session.delete(myGenero)
         mongo.db.GENERO.delete_one({"_id": eval(key)})
-        # TODO: set genero en pelicula to null
+        mongo.db.PELICULA.update_many({"genero._id": eval(key)},{"$set": {"genero" : None }})
     except NoResultFound:
         abort(404)
         return
@@ -267,14 +275,15 @@ def insertPelicula():
             "calificacion": request.json.get('calificacion', None),
             "ano": request.json.get('ano', None),
             "reparto": [],
-            "director": mongo.db.DIRECTOR.find({"_id":request.json.get('director', None)}),
-            "genero": mongo.db.GENERO.find({"_id":request.json.get('genero', None)})
+            "director": mongo.db.DIRECTOR.find_one({"_id":request.json.get('director', None)}),
+            "genero": mongo.db.GENERO.find_one({"_id":request.json.get('genero', None)})
         })
     except IntegrityError:
         return 'integrity error', 400
     msDb.session.commit()
     myDb.session.commit()
     return 'ok'
+
 @api.route('/pelicula/<key>', methods=['PUT'])
 def updatePeliculaByKey(key):
     try:
@@ -294,8 +303,13 @@ def updatePeliculaByKey(key):
             MyPelicula.calificacion: request.json.get('calificacion', MyPelicula.nombre),
         }, synchronize_session=False)
 
-        mongo.db.PELICULA.update_one({"_id": eval(key)},{"$set":request.json})
-        # TODO: ver si cambio director o genero y cambiar eso en la pelicula de mongo, revisar que no se pierda el reparto
+        obj = mongo.db.PELICULA.find_one({"_id":eval(key)})
+        mongo.db.PELICULA.update_one({"_id": eval(key)},{"$set":{"_id": request.json.get('_id', obj["_id"]),
+                                                             "nombre": request.json.get('nombre', obj["nombre"]),
+                                                             "calificacion": request.json.get('calificacion', obj["calificacion"]),
+                                                             "ano": request.json.get('ano', obj["ano"]),
+                                                             "director": mongo.db.DIRECTOR.find_one({"_id":request.json.get('director', obj["director"]["_id"])}),
+                                                             "genero": mongo.db.GENERO.find_one({"_id":request.json.get('genero', obj["genero"]["_id"])})}})
 
 
     except IntegrityError:
@@ -346,10 +360,10 @@ def insertReparto():
             'personaje', None), calificacion=request.json.get('calificacion', None))
         myDb.session.add(myReparto)
         mongo.db.PELICULA.update(
-            { "_id": request.json.get('idPelicula') },
-            { "$push": { "reparto": {"actor": mongo.db.ACTOR.find({"_id": request.json.get('idActor')}),
-                                     "personaje":request.json.get('personaje', None),
-                                     "calificacion": request.json.get('calificacion', None) }}})
+        { "_id": request.json.get('idPelicula') },
+        { "$push": { "reparto": {"actor": mongo.db.ACTOR.find_one({"_id": request.json.get('idActor',None)}),
+                                 "personaje":request.json.get('personaje', None),
+                                 "calificacion": request.json.get('calificacion', None) }}})
     except IntegrityError:
         return 'integrity error', 400
     msDb.session.commit()
@@ -374,10 +388,11 @@ def updateRepartoByKey(keyPelicula, keyActor):
             MyReparto.personaje: request.json.get('personaje', MyReparto.personaje),
             MyReparto.calificacion: request.json.get('calificacion', MyReparto.calificacion)
         }, synchronize_session=False)
-        mongo.db.PELICULA.update({ "_id": int(keyPelicula) , "reparto.actor":int(keyActor)},
-            { "$set": { "reparto.$.personaje": request.json.get('personaje', None),
-                        "reparto.$.calificacion": request.json.get('calificacion', None) }})
-
+        obj = mongo.db.PELICULA.find_one({"_id": int(keyPelicula), "reparto.actor._id": int(keyActor)},
+                                     {"_id":0, "reparto.calificacion":1, "reparto.personaje":1})["reparto"][0]
+        mongo.db.PELICULA.update({ "_id": int(keyPelicula) , "reparto.actor._id": int(keyActor)},
+                                     { "$set": {"reparto.$.calificacion":request.json.get('calificacion',obj["calificacion"]),
+                                                "reparto.$.personaje":   request.json.get('personaje',obj["personaje"])}})
     except IntegrityError:
         return 'integrity error', 400
     msDb.session.commit()
@@ -394,8 +409,8 @@ def deleteRepartoByKey(keyPelicula, keyActor):
         msDb.session.delete(msReparto)
         myDb.session.delete(myReparto)
         mongo.db.PELICULA.update(
-            { "_id": keyPelicula },
-            { "$pull": { "reparto": {"actor._id" :keyActor}}})
+            { "_id": int(keyPelicula)},
+            { "$pull": { "reparto": {"actor._id" :int(keyActor)}}})
     except NoResultFound:
         abort(404)
         return
