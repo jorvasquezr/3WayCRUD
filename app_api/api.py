@@ -48,7 +48,7 @@ def insertActor():
         myActor = MyActor(id=msActor.id, nombre=request.json.get('nombre', None), pais=request.json.get(
             'pais', None), nacimiento=request.json.get('nacimiento', None))
         myDb.session.add(myActor)
-        mongo.db.ACTOR.insert_one({
+-        mongo.db.ACTOR.insert_one({
             "_id": msActor.id,
             "nombre": request.json.get('nombre', None),
             "pais": request.json.get('pais', None),
@@ -307,9 +307,20 @@ def updatePeliculaByKey(key):
         mongo.db.PELICULA.update_one({"_id": eval(key)},{"$set":{"_id": request.json.get('_id', obj["_id"]),
                                                              "nombre": request.json.get('nombre', obj["nombre"]),
                                                              "calificacion": request.json.get('calificacion', obj["calificacion"]),
-                                                             "ano": request.json.get('ano', obj["ano"]),
-                                                             "director": mongo.db.DIRECTOR.find_one({"_id":request.json.get('director', obj["director"]["_id"])}),
-                                                             "genero": mongo.db.GENERO.find_one({"_id":request.json.get('genero', obj["genero"]["_id"])})}})
+                                                             "ano": request.json.get('ano', obj["ano"])}})
+        if obj["director"] != None:
+            mongo.db.PELICULA.update_one({"_id": eval(key)},{"$set":
+            {"director": mongo.db.DIRECTOR.find_one({"_id":request.json.get('director', obj["director"]["_id"])})}})
+        else:
+            mongo.db.PELICULA.update_one({"_id": eval(key)},{"$set":
+            {"director": mongo.db.DIRECTOR.find_one({"_id":request.json.get('director', None)})}})
+            
+        if obj["genero"] != None:                          
+            mongo.db.PELICULA.update_one({"_id": eval(key)},{"$set":
+            {"genero": mongo.db.DIRECTOR.find_one({"_id":request.json.get('genero', obj["genero"]["_id"])})}})            
+        else:
+            mongo.db.PELICULA.update_one({"_id": eval(key)},{"$set":
+            {"genero": mongo.db.DIRECTOR.find_one({"_id":request.json.get('genero', None)})}})
 
 
     except IntegrityError:
