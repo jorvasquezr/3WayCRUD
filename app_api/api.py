@@ -48,7 +48,7 @@ def insertActor():
         myActor = MyActor(id=msActor.id, nombre=request.json.get('nombre', None), pais=request.json.get(
             'pais', None), nacimiento=request.json.get('nacimiento', None))
         myDb.session.add(myActor)
--        mongo.db.ACTOR.insert_one({
+        mongo.db.ACTOR.insert_one({
             "_id": msActor.id,
             "nombre": request.json.get('nombre', None),
             "pais": request.json.get('pais', None),
@@ -389,7 +389,6 @@ def getRepartos():
 
 @api.route('/reparto/<keyPelicula>/<keyActor>', methods=['PATCH'])
 def updateRepartoByKey(keyPelicula, keyActor):
-    # TODO: no permitir cambiar actor o pelicula
     if (request.json.get('idPelicula', None) != None or request.json.get('idActor', None) != None):
         return 'can\'t change the keys', 400
     try:
