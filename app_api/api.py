@@ -317,10 +317,10 @@ def updatePeliculaByKey(key):
             
         if obj["genero"] != None:                          
             mongo.db.PELICULA.update_one({"_id": eval(key)},{"$set":
-            {"genero": mongo.db.DIRECTOR.find_one({"_id":request.json.get('genero', obj["genero"]["_id"])})}})            
+            {"genero": mongo.db.GENERO.find_one({"_id":request.json.get('genero', obj["genero"]["_id"])})}})            
         else:
             mongo.db.PELICULA.update_one({"_id": eval(key)},{"$set":
-            {"genero": mongo.db.DIRECTOR.find_one({"_id":request.json.get('genero', None)})}})
+            {"genero": mongo.db.GENERO.find_one({"_id":request.json.get('genero', None)})}})
 
 
     except IntegrityError:
